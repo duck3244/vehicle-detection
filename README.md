@@ -2,6 +2,8 @@
 
 YOLOv8 + Meta SAM 기반 차량 감지/세그멘테이션 시스템. FastAPI 백엔드와 React 프론트엔드, 그리고 CLI를 제공합니다.
 
+![Demo](./demo.png)
+
 ## 프로젝트 구조
 
 ```
