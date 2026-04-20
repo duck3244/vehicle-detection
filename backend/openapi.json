@@ -1,0 +1,562 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Vehicle Detection API",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/system/health": {
+      "get": {
+        "tags": [
+          "meta"
+        ],
+        "summary": "Health",
+        "description": "\ud604\uc7ac \ub7f0\ud0c0\uc784 \uc0c1\ud0dc (GPU/\uba54\ubaa8\ub9ac/\ubaa8\ub378 \ub85c\ub4dc \uc5ec\ubd80).",
+        "operationId": "health_api_system_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/models": {
+      "get": {
+        "tags": [
+          "meta"
+        ],
+        "summary": "Models",
+        "operationId": "models_api_models_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/detect": {
+      "post": {
+        "tags": [
+          "detect"
+        ],
+        "summary": "Detect",
+        "description": "\ub2e8\uc77c \uc774\ubbf8\uc9c0 \uac10\uc9c0 (\ub3d9\uae30).",
+        "operationId": "detect_api_detect_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_detect_api_detect_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DetectResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "413": {
+            "description": "Request Entity Too Large"
+          },
+          "415": {
+            "description": "Unsupported Media Type"
+          },
+          "422": {
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/api/detect/batch": {
+      "post": {
+        "tags": [
+          "detect"
+        ],
+        "summary": "Detect Batch",
+        "description": "\ubc30\uce58 \uac10\uc9c0 (\ube44\ub3d9\uae30 job).",
+        "operationId": "detect_batch_api_detect_batch_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_detect_batch_api_detect_batch_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchJobResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "413": {
+            "description": "Request Entity Too Large"
+          },
+          "415": {
+            "description": "Unsupported Media Type"
+          },
+          "422": {
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/api/jobs/{job_id}": {
+      "get": {
+        "tags": [
+          "jobs"
+        ],
+        "summary": "Get Job",
+        "operationId": "get_job_api_jobs__job_id__get",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobStatusResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BatchJobResponse": {
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "title": "Job Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "job_id"
+        ],
+        "title": "BatchJobResponse"
+      },
+      "Body_detect_api_detect_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "title": "File"
+          },
+          "use_sam": {
+            "type": "boolean",
+            "title": "Use Sam",
+            "default": true
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_detect_api_detect_post"
+      },
+      "Body_detect_batch_api_detect_batch_post": {
+        "properties": {
+          "files": {
+            "items": {
+              "type": "string",
+              "format": "binary"
+            },
+            "type": "array",
+            "title": "Files"
+          },
+          "use_sam": {
+            "type": "boolean",
+            "title": "Use Sam",
+            "default": true
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          }
+        },
+        "type": "object",
+        "required": [
+          "files"
+        ],
+        "title": "Body_detect_batch_api_detect_batch_post"
+      },
+      "DetectMeta": {
+        "properties": {
+          "inference_ms": {
+            "type": "integer",
+            "title": "Inference Ms"
+          },
+          "num_detections": {
+            "type": "integer",
+            "title": "Num Detections"
+          },
+          "sam_used": {
+            "type": "boolean",
+            "title": "Sam Used"
+          },
+          "yolo_model": {
+            "type": "string",
+            "title": "Yolo Model"
+          },
+          "device": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Device"
+          }
+        },
+        "type": "object",
+        "required": [
+          "inference_ms",
+          "num_detections",
+          "sam_used",
+          "yolo_model"
+        ],
+        "title": "DetectMeta"
+      },
+      "DetectResponse": {
+        "properties": {
+          "run_id": {
+            "type": "string",
+            "title": "Run Id"
+          },
+          "detections": {
+            "items": {
+              "$ref": "#/components/schemas/DetectionItem"
+            },
+            "type": "array",
+            "title": "Detections"
+          },
+          "annotated_image_url": {
+            "type": "string",
+            "title": "Annotated Image Url"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/DetectMeta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "run_id",
+          "detections",
+          "annotated_image_url",
+          "meta"
+        ],
+        "title": "DetectResponse"
+      },
+      "DetectionItem": {
+        "properties": {
+          "class": {
+            "type": "string",
+            "title": "Class",
+            "description": "\uc601\ubb38 \ud074\ub798\uc2a4\uba85"
+          },
+          "class_kr": {
+            "type": "string",
+            "title": "Class Kr",
+            "description": "\ud55c\uae00 \ud074\ub798\uc2a4\uba85"
+          },
+          "score": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Score"
+          },
+          "bbox": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "maxItems": 4,
+            "minItems": 4,
+            "title": "Bbox",
+            "description": "[x1,y1,x2,y2]"
+          },
+          "mask_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mask Url",
+            "description": "SAM \ub9c8\uc2a4\ud06c PNG URL, \uc5c6\uc73c\uba74 null"
+          }
+        },
+        "type": "object",
+        "required": [
+          "class",
+          "class_kr",
+          "score",
+          "bbox"
+        ],
+        "title": "DetectionItem"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HealthResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "degraded"
+            ],
+            "title": "Status"
+          },
+          "gpu": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Gpu"
+          },
+          "memory": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Memory"
+          },
+          "models_loaded": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Models Loaded"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "gpu",
+          "memory",
+          "models_loaded"
+        ],
+        "title": "HealthResponse"
+      },
+      "JobStatusResponse": {
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "title": "Job Id"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "running",
+              "done",
+              "failed"
+            ],
+            "title": "Status"
+          },
+          "progress": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Progress",
+            "default": 0
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total",
+            "default": 0
+          },
+          "done": {
+            "type": "integer",
+            "title": "Done",
+            "default": 0
+          },
+          "results": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/DetectResponse"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Results"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          }
+        },
+        "type": "object",
+        "required": [
+          "job_id",
+          "status"
+        ],
+        "title": "JobStatusResponse"
+      },
+      "ModelsResponse": {
+        "properties": {
+          "yolo": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Yolo"
+          },
+          "sam": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Sam"
+          },
+          "default_yolo": {
+            "type": "string",
+            "title": "Default Yolo"
+          },
+          "default_sam": {
+            "type": "string",
+            "title": "Default Sam"
+          }
+        },
+        "type": "object",
+        "required": [
+          "yolo",
+          "sam",
+          "default_yolo",
+          "default_sam"
+        ],
+        "title": "ModelsResponse"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}
